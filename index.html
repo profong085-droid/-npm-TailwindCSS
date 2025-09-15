@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>រៀនប្រើ npm និងដោះស្រាយបញ្ហា TailwindCSS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bayon&family=Hanuman:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #8e0e00;
+            --secondary: #1f1c18;
+            --accent: #e74c3c;
+            --dark: #2c3e50;
+            --light: #ecf0f1;
+            --gray: #95a5a6;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Hanuman', 'Segoe UI', 'Kanit', sans-serif;
+            line-height: 1.6;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            transform: translateZ(0);
+        }
+        
+        header {
+            background: linear-gradient(120deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100" opacity="0.1"><text x="50%" y="50%" font-size="50" text-anchor="middle" fill="white">🇰🇭</text></svg>');
+            opacity: 0.1;
+        }
+        
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .profile-header-img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .profile-header-img:hover {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+        }
+        
+        .header-text {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-family: 'Bayon', 'Koulen', cursive;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .nav {
+            background: var(--dark);
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            padding: 15px;
+        }
+        
+        .nav button {
+            background: transparent;
+            border: none;
+            color: white;
+            padding: 12px 20px;
+            margin: 5px;
+            cursor: pointer;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+            font-family: 'Kanit', sans-serif;
+            position: relative;
+            overflow: hidden;
+            transform: translateZ(0);
+        }
+        
+        .nav button::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(120deg, var(--primary), var(--secondary));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
+        }
+        
+        .nav button:hover::before {
+            opacity: 1;
+        }
+        
+        .nav button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .nav button.active {
+            background: linear-gradient(120deg, var(--primary), var(--secondary));
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .nav button.active:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .section {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .section.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        h2 {
+            color: var(--primary);
+            margin: 20px 0 15px;
+            font-family: 'Bayon', 'Koulen', cursive;
+            border-bottom: 2px solid var(--light);
+            padding-bottom: 10px;
+            position: relative;
+            display: inline-block;
+        }
+        
+        h2::after {
+            content: "";
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 50px;
+            height: 2px;
+            background: var(--secondary);
+        }
+        
+        h3 {
+            color: var(--secondary);
+            margin: 15px 0 10px;
+            font-family: 'Bayon', 'Koulen', cursive;
+            font-weight: normal;
+        }
+        
+        p {
+            margin-bottom: 15px;
+        }
+        
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 15px 0;
+            font-family: 'Consolas', 'Monaco', monospace;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transform: translateZ(0);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .code-block:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+        
+        .copy-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.3s;
+        }
+        
+        .copy-btn:hover {
+            background: var(--secondary);
+            transform: scale(1.05);
+        }
+        
+        .command {
+            color: #81e6d9;
+        }
+        
+        .comment {
+            color: #a0aec0;
+            font-style: italic;
+        }
+        
+        .step {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid var(--primary);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            transform: translateZ(0);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .step:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .error {
+            background: #ffeaa7;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #fdcb6e;
+        }
+        
+        .solution {
+            background: #d1ecf1;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #0c5460;
+        }
+        
+        .important {
+            background: #f8d7da;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #721c24;
+        }
+        
+        .success {
+            background: #d4edda;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #155724;
+        }
+        
+        ul, ol {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+        
+        li {
+            margin-bottom: 8px;
+            position: relative;
+        }
+        
+        li::before {
+            content: "•";
+            color: var(--primary);
+            font-weight: bold;
+            display: inline-block;
+            width: 1em;
+            margin-left: -1em;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            background: var(--dark);
+            color: white;
+        }
+        
+        /* Profile Card Styles */
+        .profile-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            padding: 25px;
+            margin: 20px 0;
+            text-align: center;
+            transform: translateZ(0);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .profile-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        }
+        
+        .profile-img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 0 auto 15px;
+            border: 5px solid var(--primary);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .profile-img:hover {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        .bank-details {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            margin: 20px 0;
+        }
+        
+        .bank-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px;
+            flex: 1;
+            min-width: 250px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transform: translateZ(0);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .bank-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .qr-code {
+            width: 150px;
+            height: 150px;
+            margin: 10px auto;
+            display: block;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 10px;
+            background: white;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .qr-code:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+        }
+        
+        .contact-info {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .contact-item {
+            display: flex;
+            align-items: center;
+            background: linear-gradient(120deg, var(--primary), var(--secondary));
+            padding: 10px 15px;
+            border-radius: 30px;
+            text-decoration: none;
+            color: white;
+            transition: all 0.3s;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+        }
+        
+        .contact-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            color: white;
+        }
+        
+        .contact-icon {
+            margin-right: 8px;
+            font-size: 1.2rem;
+        }
+        
+        /* Skills Section */
+        .skills {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .skill-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            min-width: 100px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .skill-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+            background: linear-gradient(120deg, var(--primary), var(--secondary));
+            color: white;
+        }
+        
+        .skill-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        
+        /* Emoji decorations */
+        .emoji {
+            display: inline-block;
+            animation: bounce 2s infinite;
+            margin: 0 5px;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        @media (max-width: 768px) {
+            .nav {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .nav button {
+                width: 80%;
+                margin: 5px 0;
+            }
+            
+            header h1 {
+                font-size: 2rem;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .bank-details {
+                flex-direction: column;
+            }
+            
+            .contact-info {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .contact-item {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .skills {
+                flex-direction: column;
+            }
+        }
+    </style>
+    <link rel="icon" href="IMG_0147.JPG">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <img src="IMG_0147.JPG" alt="Profile Image" class="profile-header-img">
+                <div class="header-text">
+                    <h1>រៀនប្រើ npm និងដោះស្រាយបញ្ហា TailwindCSS <span class="emoji">🚀</span></h1>
+                    <p>ជំនួយដ៏ពេញលេញសម្រាប់អ្នកចាប់ផ្តើម <span class="emoji">🎓</span></p>
+                </div>
+            </div>
+        </header>
+        
+        <div class="nav">
+            <button class="active" data-target="intro">មេរៀន npm <span class="emoji">📦</span></button>
+            <button data-target="install">ការដំឡើង <span class="emoji">⚙️</span></button>
+            <button data-target="usage">ការប្រើប្រាស់ <span class="emoji">💻</span></button>
+            <button data-target="problems">បញ្ហា TailwindCSS <span class="emoji">⚠️</span></button>
+            <button data-target="solutions">ដំណោះស្រាយ <span class="emoji">🔧</span></button>
+            <button data-target="github">Clone GitHub <span class="emoji">👨‍💻</span></button>
+            <button data-target="profile">Profile & ទំនាក់ទំនង <span class="emoji">👤</span></button>
+        </div>
+        
+        <div class="content">
+            <div id="intro" class="section active">
+                <h2>npm ជាអ្វី? <span class="emoji">🤔</span></h2>
+                <p>npm (Node Package Manager) គឺជាកម្មវិធីគ្រប់គ្រង packages សម្រាប់ JavaScript។ វាត្រូវបានប្រើប្រាស់យ៉ាងទូលំទូលាយក្នុងការអភិវឌ្ឍ Web Applications ដោយមាន Node.js។</p>
+                
+                <h2>គំរោងថ្មីជាមួយ npm <span class="emoji">✨</span></h2>
+                <div class="step">
+                    <h3>បង្កើតគំរោងថ្មី</h3>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span>Command Line</span>
+                            <button class="copy-btn">ចម្លង</button>
+                        </div>
+                        <span class="command">mkdir my-project</span><br>
+                        <span class="command">cd my-project</span><br>
+                        <span class="command">npm init -y</span>
+                    </div>
+                </div>
+                
+                <h2>ដំឡើង Packages <span class="emoji">📥</span></h2>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>Command Line</span>
+                        <button class="copy-btn">ចម្លង</button>
+                    </div>
+                    <span class="command">npm install &lt;package-name&gt;</span> <span class="comment"># ដំឡើង package</span><br>
+                    <span class="command">npm install --save-dev &lt;package-name&gt;</span> <span class="comment"># ដំឡើងសម្រាប់ development</span><br>
+                    <span class="command">npm install -g &lt;package-name&gt;</span> <span class="comment"># ដំឡើងជាសកល</span>
+                </div>
+            </div>
+            
+            <div id="install" class="section">
+                <h2>ដំឡើង Node.js និង npm <span class="emoji">🔧</span></h2>
+                <p>npm មកជាមួយ Node.js។ ដូច្នេះអ្នកត្រូវតែដំឡើង Node.js ជាមុនសិន៖</p>
+                <ol>
+                    <li>ចូលទៅកាន់ <a href="https://nodejs.org" target="_blank">https://nodejs.org</a></li>
+                    <li>ដំឡើង version LTS (Recommended)</li>
+                    <li>ពិនិត្យការដំឡើងដោយបើក Command Prompt/Terminal</li>
+                </ol>
+                
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>Command Line</span>
+                        <button class="copy-btn">ចម្លង</button>
+                    </div>
+                    <span class="command">node -v</span><br>
+                    <span class="command">npm -v</span>
+                </div>
+                
+                <h2>ដំឡើង TailwindCSS <span class="emoji">🎨</span></h2>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>Command Line</span>
+                        <button class="copy-btn">ចម្លង</button>
+                    </div>
+                    <span class="command">npm install -D tailwindcss postcss autoprefixer</span><br>
+                    <span class="command">npx tailwindcss init -p</span>
+                </div>
+            </div>
+            
+            <div id="usage" class="section">
+                <h2>ការប្រើ Packages <span class="emoji">💼</span></h2>
+                <p>បន្ទាប់ពីដំឡើង package ហើយ អ្នកអាចប្រើវានៅក្នុង code របស់អ្នក៖</p>
+                
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>JavaScript</span>
+                        <button class="copy-btn">ចម្លង</button>
+                    </div>
+                    <span class="comment">// នៅក្នុង file JavaScript របស់អ្នក</span><br>
+                    <span class="command">const _ = require('lodash');</span><br><br>
+                    <span class="command">const numbers = [1, 2, 3, 4, 5];</span><br>
+                    <span class="command">const sum = _.sum(numbers);</span><br>
+                    <span class="command">console.log(sum);</span> <span class="comment">// Output: 15</span>
+                </div>
+                
+                <h2>Scripts <span class="emoji">📜</span></h2>
+                <p>នៅក្នុង <code>package.json</code> មានផ្នែក <code>scripts</code> ដែលអនុញ្ញាតឱ្យអ្នកដំណើរការ commands ផ្សេងៗ៖</p>
+                
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>package.json</span>
+                        <button class="copy-btn">ចម្លង</button>
+                    </div>
+                    <span class="command">"scripts": {</span><br>
+                    <span class="command">  "start": "node app.js",</span><br>
+                    <span class="command">  "dev": "nodemon app.js",</span><br>
+                    <span class="command">  "test": "echo \"Error: no test specified\" && exit 1"</span><br>
+                    <span class="command">}</span>
+                </div>
+                
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>Command Line</span>
+                        <button class="copy-btn">ចម្លង</button>
+                    </div>
+                    <span class="command">npm run dev</span><br>
+                    <span class="command">npm start</span><br>
+                    <span class="command">npm test</span>
+                </div>
+            </div>
+            
+            <div id="problems" class="section">
+                <h2>បញ្ហាទូទៅជាមួយ TailwindCSS <span class="emoji">😫</span></h2>
+                
+                <div class="error">
+                    <h3>បញ្ហា: npm error could not determine executable to run</h3>
+                    <p>នេះជាបញ្ហាទូទៅនៅពេល npm/npx មិនអាចរកឃើញ binary នៃ tailwindcss។</p>
+                </div>
+                
+                <div class="error">
+                    <h3>បញ្ហា: 'tailwindcss' is not recognized</h3>
+                    <p>បញ្ហានេះកើតឡើងព្រោះ Windows មិនអាចរកឃើញពាក្យបញ្ជា tailwindcss ក្នុង PATH environment variable របស់អ្នក។</p>
+                </div>
+                
+                <h2>មូលហេតុដែលអាចជា <span class="emoji">🔍</span></h2>
+                <ul>
+                    <li>ការដំឡើង TailwindCSS មិនបានសម្រេច</li>
+                    <li>បញ្ហាជាមួយ npm cache</li>
+                    <li>ការកំណត់ PATH environment variable មិនត្រឹមត្រូវ</li>
+                    <li>កំណែ Node.js/npm មានបញ្ហា</li>
+                </ul>
+            </div>
+            
+            <div id="solutions" class="section">
+                <h2>ដំណោះស្រាយបញ្ហា TailwindCSS <span class="emoji">✅</span></h2>
+                
+                <div class="solution">
+                    <h3>១. ដំឡើង TailwindCSS ឡើងវិញ</h3>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span>Command Line</span>
+                            <button class="copy-btn">ចម្លង</button>
+                        </div>
+                        <span class="command">npm install -D tailwindcss@latest postcss@latest autoprefixer@latest</span>
+                    </div>
+                </div>
+                
+                <div class="solution">
+                    <h3>២. សាកល្បងដំណើរការតាមរយៈ node_modules</h3>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span>Command Line</span>
+                            <button class="copy-btn">ចម្លង</button>
+                        </div>
+                        <span class="command">.\node_modules\.bin\tailwindcss.cmd init -p</span>
+                    </div>
+                </div>
+                
+                <div class="solution">
+                    <h3>៣. Clear npm cache</h3>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span>Command Line</span>
+                            <button class="copy-btn">ចម្លង</button>
+                        </div>
+                        <span class="command">npm cache clean --force</span><br>
+                        <span class="command">npm cache verify</span>
+                    </div>
+                </div>
+                
+                <div class="solution">
+                    <h3>៤. បង្កើតឯកសារកំណត់រចនាសម្ព័ន្ធដោយផ្ទាល់</h3>
+                    <p>បង្កើតឯកសារ <code>tailwind.config.js</code>៖</p>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span>tailwind.config.js</span>
+                            <button class="copy-btn">ចម្លង</button>
+                        </div>
+                        <span class="comment">/** @type {import('tailwindcss').Config} */</span><br>
+                        <span class="command">module.exports = {</span><br>
+                        <span class="command">  content: ["./src/**/*.{html,js}"],</span><br>
+                        <span class="command">  theme: {</span><br>
+                        <span class="command">    extend: {},</span><br>
+                        <span class="command">  },</span><br>
+                        <span class="command">  plugins: [],</span><br>
+                        <span class="command">}</span>
+                    </div>
+                    
+                    <p>បង្កើតឯកសារ <code>postcss.config.js</code>៖</p>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span>postcss.config.js</span>
+                            <button class="copy-btn">ចម្លង</button>
+                        </div>
+                        <span class="command">module.exports = {</span><br>
+                        <span class="command">  plugins: {</span><br>
+                        <span class="command">    tailwindcss: {},</span><br>
+                        <span class="command">    autoprefixer: {},</span><br>
+                        <span class="command">  },</span><br>
+                        <span class="command">}</span>
+                    </div>
+                </div>
+                
+                <div class="important">
+                    <h3>ចំណាំសំខាន់ <span class="emoji">📝</span></h3>
+                    <p>បន្ទាប់ពីអ្នកធ្វើការផ្លាស់ប្តូរណាមួយ សូមប្រាកដថាអ្នកបានបើក Terminal/PowerShell ថ្មី ដើម្បីអនុវត្តការផ្លាស់ប្តូរ។</p>
+                </div>
+            </div>
+            
+            <div id="github" class="section">
+                <h2>ការបង្កើត Project ពី GitHub <span class="emoji">🐙</span></h2>
+                <p>ក្នុងផ្នែកនេះ យើងនឹងរៀនពីការបង្កើត project មួយពី GitHub repository ទៅក្នុង Visual Studio Code និងដំណើរការ npm។</p>
+                
+                <div class="step">
+                    <h3>១. Clone Repository ពី GitHub</h3>
+                    <p>ដំបូងយើងត្រូវ copy HTTPS URL ពី GitHub repository។ ឧទាហរណ៍:</p>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span>GitHub HTTPS URL</span>
+                            <button class="copy-btn">ចម្លង</button>
+                        </div>
+                        <span class="command">https://github.com/profong085-droid/chai-fong.git</span>
+                    </div>
+                    
+                    <p>បើក Terminal ឬ Command Prompt នៅកន្លែងដែលអ្នកចង់ផ្ទុក project រួច run command ខាងក្រោម:</p>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span>Command Line</span>
+                            <button class="copy-btn">ចម្លង</button>
+                        </div>
+                        <span class="command">git clone https://github.com/profong085-droid/chai-fong.git</span><br>
+                        <span class="command">cd chai-fong</span>
+                    </div>
+                </div>
+                
+                <div class="step">
+                    <h3>២. បើក Project ក្នុង Visual Studio Code</h3>
+                    <p>បើក Visual Studio Code ហើយបើក folder project ដែលទើបតែ clone:</p>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span>Command Line</span>
+                            <button class="copy-btn">ចម្លង</button>
+                        </div>
+                        <span class="command">code .</span>
+                    </div>
+                    <p>ឬអ្នកអាចធ្វើតាមរបៀប manual: File > Open Folder > ជ្រើសរើស folder chai-fong</p>
+                </div>
+                
+                <div class="step">
+                    <h3>៣. ដំឡើង Dependencies តាមរយៈ npm</h3>
+                    <p>ពីក្នុង Terminal នៅក្នុង Visual Studio Code, run command ដើម្បីដំឡើង dependencies ទាំងអស់:</p>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span>Command Line</span>
+                            <button class="copy-btn">ចម្លង</button>
+                        </div>
+                        <span class="command">npm install</span>
+                    </div>
+                    <p>Command នេះនឹងអានព័ត៌មានពី package.json ហើយដំឡើង packages ទាំងអស់ដែល project ត្រូវការ។</p>
+                </div>
+                
+                <div class="step">
+                    <h3>៤. ដំណើរការ Project</h3>
+                    <p>បន្ទាប់ពីដំឡើង dependencies រួច, អ្នកអាចដំណើរការ project តាម commands នៅក្នុង package.json:</p>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span>Command Line</span>
+                            <button class="copy-btn">ចម្លង</button>
+                        </div>
+                        <span class="command">npm run dev</span> <span class="comment"># សម្រាប់ development server</span><br>
+                        <span class="command">npm start</span> <span class="comment"># សម្រាប់ production server</span><br>
+                        <span class="command">npm run build</span> <span class="comment"># សម្រាប់ build project</span>
+                    </div>
+                </div>
+                
+                <div class="important">
+                    <h3>ចំណាំសំខាន់ <span class="emoji">⚠️</span></h3>
+                    <p>អ្នកត្រូវតែមាន Git និង Node.js ដំឡើងនៅលើ computer របស់អ្នកជាមុនសិន ទើបអាចធ្វើការ follow steps ទាំងនេះបាន។</p>
+                </div>
+            </div>
+            
+            <div id="profile" class="section">
+                <h2>Profile Card & ព័ត៌មានទំនាក់ទំនង <span class="emoji">👤</span></h2>
+                
+                <div class="profile-card">
+                    <img src="IMG_0147.JPG" alt="Profile Image" class="profile-img">
+                    <h2>Pho ChaiFong <span class="emoji">👋</span></h2>
+                    <p>Full Stack Developer & Flutter Integration Specialist <span class="emoji">💻</span></p>
+                    
+                    <div class="skills">
+                        <div class="skill-item">
+                            <i class="fab fa-js skill-icon"></i>
+                            <span>JavaScript</span>
+                        </div>
+                        <div class="skill-item">
+                            <i class="fab fa-flutter skill-icon"></i>
+                            <span>Flutter</span>
+                        </div>
+                        <div class="skill-item">
+                            <i class="fab fa-node-js skill-icon"></i>
+                            <span>Node.js</span>
+                        </div>
+                        <div class="skill-item">
+                            <i class="fab fa-react skill-icon"></i>
+                            <span>React</span>
+                        </div>
+                        <div class="skill-item">
+                            <i class="fab fa-html5 skill-icon"></i>
+                            <span>HTML/CSS</span>
+                        </div>
+                    </div>
+                    
+                    <h3>ABA ធនាគារ <span class="emoji">🏦</span></h3>
+                    <div class="bank-details">
+                        <div class="bank-card">
+                            <h4>គណនី ABA</h4>
+                            <p>ឈ្មោះ: <strong>Pho ChaiFong</strong></p>
+                            <p>លេខគណនី: <strong>004378149</strong></p>
+                            <img src="photo_2025-09-15_07-28-23.jpg" alt="ABA QR Code" class="qr-code">
+                        </div>
+                        
+                        <div class="bank-card">
+                            <h4>គណនី ACLEDA</h4>
+                            <p>ឈ្មោះ: <strong>Pho ChaiFong</strong></p>
+                            <p>លេខគណនី: <strong>0979450831</strong></p>
+                            <img src="photo_2025-09-15_07-28-23 (2).jpg" alt="ACLEDA QR Code" class="qr-code">
+                        </div>
+                    </div>
+                    
+                    <h3>ទំនាក់ទំនង <span class="emoji">📞</span></h3>
+                    <div class="contact-info">
+                        <a href="https://www.facebook.com/share/19mX4Uf7Kr/?mibextid=wwXIfr" target="_blank" class="contact-item">
+                            <i class="fab fa-facebook contact-icon"></i> Facebook
+                        </a>
+                        
+                        <a href="tel:0979450831" class="contact-item">
+                            <i class="fas fa-phone contact-icon"></i> 0979450831
+                        </a>
+                        
+                        <a href="https://t.me/0979450831" target="_blank" class="contact-item">
+                            <i class="fab fa-telegram contact-icon"></i> Telegram
+                        </a>
+                        
+                        <a href="https://wa.me/855979450831" target="_blank" class="contact-item">
+                            <i class="fab fa-whatsapp contact-icon"></i> WhatsApp
+                        </a>
+                        
+                        <a href="https://www.tiktok.com/@ceyjomesprocute?_t=ZS-8zZBbD8NjYm&_r=1" target="_blank" class="contact-item">
+                            <i class="fab fa-tiktok contact-icon"></i> TikTok
+                        </a>
+                    </div>
+                    
+                    <div class="important">
+                        <h3>Integration Services <span class="emoji">🔌</span></h3>
+                        <p>ខ្ញុំផ្តល់ជូននូវសេវាកម្មដូចជា៖</p>
+                        <ul>
+                            <li>ABA KHQR Integration with Flutter</li>
+                            <li>3D Lanyard Profile Card Design</li>
+                            <li>Full Stack Web Development</li>
+                            <li>Mobile App Development</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>វេបសាយជំនួយសម្រាប់អ្នករៀនប្រើ npm និងដោះស្រាយបញ្ហា TailwindCSS | ទំនាក់ទំនង: 0979450831</p>
+        </footer>
+    </div>
+
+    <script>
+        // JavaScript for tab navigation
+        document.addEventListener('DOMContentLoaded', function() {
+            const navButtons = document.querySelectorAll('.nav button');
+            const sections = document.querySelectorAll('.section');
+            
+            navButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const target = this.getAttribute('data-target');
+                    
+                    // Remove active class from all buttons and sections
+                    navButtons.forEach(btn => btn.classList.remove('active'));
+                    sections.forEach(section => section.classList.remove('active'));
+                    
+                    // Add active class to current button and section
+                    this.classList.add('active');
+                    document.getElementById(target).classList.add('active');
+                });
+            });
+            
+            // Add copy functionality to code blocks
+            const copyButtons = document.querySelectorAll('.copy-btn');
+            copyButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const codeBlock = this.parentElement.parentElement;
+                    const textToCopy = codeBlock.textContent;
+                    
+                    // Create a temporary textarea to copy text
+                    const textarea = document.createElement('textarea');
+                    textarea.value = textToCopy;
+                    document.body.appendChild(textarea);
+                    
+                    // Select and copy text
+                    textarea.select();
+                    document.execCommand('copy');
+                    
+                    // Remove textarea
+                    document.body.removeChild(textarea);
+                    
+                    // Visual feedback
+                    const originalText = this.textContent;
+                    this.textContent = 'ចម្លងដោយជោគជ័យ!';
+                    
+                    setTimeout(() => {
+                        this.textContent = originalText;
+                    }, 1500);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
